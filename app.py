@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from config import Config
 from controllers.accueil import bp_accueil
 app = Flask(__name__)
@@ -15,7 +15,7 @@ app.register_blueprint(bp_effectifs)
 def page_non_trouvee(e):
      return render_template("erreur.html",
      message="Page non trouvée."), 404
-     @app.errorhandler(500)
+@app.errorhandler(500)
 def erreur_serveur(e):
      return render_template("erreur.html",
      message="Erreur interne. Réessayez plus tard."), 500
