@@ -1,7 +1,7 @@
 /* =====================================================================
    Charte graphique — Données de santé libérale (SAE2.01)
    Direction : institutionnel / santé publique
-   - Palette vert émeraude (monochrome) sur fond papier
+   - Palette "Orange and Blue" (schemecolor) : bleu dominant + accent orange
    - Titres : Hanken Grotesk · Texte : IBM Plex Sans
    Tous les réglages passent par des variables CSS (design tokens)
    définies dans :root, pour un style cohérent et facile à ajuster.
@@ -12,23 +12,24 @@
 /* ------------------------------------------------------------------ */
 :root {
     /* Couleurs — surfaces */
-    --c-paper:        #f6f4ef;   /* fond de page (blanc cassé chaud)   */
+    --c-paper:        #f5f8fc;   /* fond de page (bleu très clair)     */
     --c-surface:      #ffffff;   /* cartes, tableaux                   */
-    --c-surface-alt:  #efeae0;   /* zones légèrement teintées          */
+    --c-surface-alt:  #eaf0f9;   /* zones légèrement teintées          */
 
     /* Couleurs — texte */
-    --c-ink:          #14302e;   /* texte principal (slate pétrole)    */
-    --c-muted:        #5c6b69;   /* texte secondaire                   */
+    --c-ink:          #1b2a4a;   /* texte principal (navy sombre)      */
+    --c-muted:        #5a647a;   /* texte secondaire                   */
 
-    /* Couleurs — marque */
-    --c-primary:      #16715c;   /* vert émeraude : entêtes, actions   */
-    --c-primary-700:  #0f4f40;   /* survol / état pressé               */
-    --c-primary-050:  #e4efeb;   /* fond teinté (état actif, en-têtes) */
-    --c-accent:       #16715c;   /* liens, focus (même famille verte)  */
-    --c-accent-700:   #0f4f40;
+    /* Couleurs — marque (bleu dominant) */
+    --c-primary:      #0474ba;   /* bleu : entêtes, actions, liens     */
+    --c-primary-700:  #035a90;   /* survol / état pressé               */
+    --c-primary-050:  #e3f1fb;   /* fond teinté (état actif, en-têtes) */
+    /* Accent orange (chips, courbe, focus) */
+    --c-accent:       #f17720;   /* orange : accents                   */
+    --c-accent-700:   #d9610f;
 
     /* Couleurs — états */
-    --c-border:       #e2ddd3;   /* bordures chaudes                   */
+    --c-border:       #dbe3ee;   /* bordures (gris bleuté)             */
     --c-success:      #2f7d52;
     --c-danger:       #c0392b;
 
@@ -60,8 +61,8 @@
     --radius-lg: 20px;
 
     /* Ombres */
-    --shadow-sm: 0 1px 2px rgba(20, 48, 46, 0.06);
-    --shadow-md: 0 8px 24px -12px rgba(20, 48, 46, 0.25);
+    --shadow-sm: 0 1px 2px rgba(20, 35, 70, 0.06);
+    --shadow-md: 0 8px 24px -12px rgba(20, 35, 70, 0.25);
 
     /* Divers */
     --container: 960px;
@@ -87,7 +88,7 @@ body {
     background-color: var(--c-paper);
     /* Léger dégradé d'ambiance en haut de page */
     background-image: radial-gradient(120% 60% at 50% -10%,
-                      rgba(14, 92, 99, 0.08), transparent 60%);
+                      rgba(4, 116, 186, 0.10), transparent 60%);
     background-repeat: no-repeat;
 }
 
@@ -113,12 +114,12 @@ h3 {
 p { margin: 0 0 var(--space-4); }
 
 a {
-    color: var(--c-accent);
-    text-decoration-color: color-mix(in srgb, var(--c-accent) 35%, transparent);
+    color: var(--c-primary);
+    text-decoration-color: color-mix(in srgb, var(--c-primary) 35%, transparent);
     text-underline-offset: 3px;
     transition: color var(--transition);
 }
-a:hover { color: var(--c-accent-700); text-decoration-color: currentColor; }
+a:hover { color: var(--c-primary-700); text-decoration-color: currentColor; }
 
 :focus-visible {
     outline: 3px solid color-mix(in srgb, var(--c-accent) 55%, transparent);
@@ -131,6 +132,7 @@ a:hover { color: var(--c-accent-700); text-decoration-color: currentColor; }
 /* ------------------------------------------------------------------ */
 header {
     background: linear-gradient(180deg, var(--c-primary), var(--c-primary-700));
+    /* background: var(--c-primary); */
     color: #fff;
     padding: var(--space-5) var(--space-6);
     box-shadow: var(--shadow-md);
@@ -190,7 +192,7 @@ main ul {
 main li {
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-left: 3px solid var(--c-primary);
+    border-left: 3px solid var(--c-accent);
     border-radius: var(--radius-sm);
     padding: var(--space-2) var(--space-3);
     font-size: var(--fs-300);
@@ -238,7 +240,7 @@ select {
     appearance: none;
     -webkit-appearance: none;
     padding-right: 2.25rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2316715c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230474ba' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.9rem center;
     cursor: pointer;
