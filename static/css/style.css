@@ -24,3 +24,16 @@ footer {
     color: #777;
     border-top: 1px solid #ddd;
 }
+
+footer p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/* ----------------------------------------------- */
+
+.logo_footer {
+    width: 5rem;
+}

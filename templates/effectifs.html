@@ -35,7 +35,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        const donnees = {{ evolution,tojson }};new Chart(document.getElementById("graphique"), {
+        const donnees = {{ evolution|tojson }};
+
+        new Chart(document.getElementById("graphique"), {
             type: "line",
             data: {
                 labels: donnees.map(d => d.annee),
