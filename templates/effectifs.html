@@ -3,51 +3,97 @@
 {% block titre %}Effectifs{% endblock %}
 
 {% block contenu %}
-    <h2>{{ prof.libelle }} – {{ dept.code }} {{ dept.libelle }} – {{ annee }}</h2>
+    <h2>Effectifs des professionnels de santé</h2>
 
-    {% if resultats %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Année</th>
-                    <th>Effectif</th>
-                    <th>Densité</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in resultats %}
-                    <tr>
-                        <td>{{ r.annee }}</td>
-                        <td>{{ r.effectif }}</td>
-                        <td>{{ r.densite }}</td>
-                    </tr>
+    <form method="get" action="{{ url_for('effectifs.afficher') }}" class="formulaire">
+        <label>Région
+            <select id="region">
+                <option value="">-- Choisir --</option>
+                {% for r in regions %}
+                    <option value="{{ r.id }}" {% if r.id == region_id %}selected{% endif %}>{{ r.libelle }}</option>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Aucune donnée disponible pour cette sélection.</p>
+            </select>
+        </label>
+
+        <label>Département
+            <select id="departement" name="departement_id">
+                <option value="">-- Choisir --</option>
+                {% for d in departements %}
+                    <option value="{{ d.id }}" {% if dept and d.id == dept.id %}selected{% endif %}>{{ d.code }} – {{ d.libelle }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Profession
+            <select name="profession_id">
+                <option value="">-- Choisir --</option>
+                {% for p in professions %}
+                    <option value="{{ p.id }}" {% if prof and p.id == prof.id %}selected{% endif %}>{{ p.libelle }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Année
+            <select name="annee">
+                <option value="">-- Choisir --</option>
+                {% for a in annees %}
+                    <option value="{{ a }}" {% if a == annee %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <button type="submit">Afficher</button>
+    </form>
+
+    {% if prof and dept and annee %}
+        <h2>{{ prof.libelle }} – {{ dept.code }} {{ dept.libelle }} – {{ annee }}</h2>
+
+        {% if resultats %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Année</th>
+                        <th>Effectif</th>
+                        <th>Densité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in resultats %}
+                        <tr>
+                            <td>{{ r.annee }}</td>
+                            <td>{{ r.effectif }}</td>
+                            <td>{{ r.densite }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucune donnée disponible pour cette sélection.</p>
+        {% endif %}
+
+        {% if evolution %}
+            <h3>Évolution sur plusieurs années</h3>
+            <canvas id="graphique"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const donnees = {{ evolution|tojson }};
+                new Chart(document.getElementById("graphique"), {
+                    type: "line",
+                    data: {
+                        labels: donnees.map(d => d.annee),
+                        datasets: [{
+                            label: "Effectif",
+                            data: donnees.map(d => d.effectif),
+                            borderColor: "#0e5c63",
+                            backgroundColor: "rgba(14, 92, 99, 0.12)",
+                            tension: 0.2,
+                            fill: true,
+                        }],
+                    },
+                });
+            </script>
+        {% endif %}
     {% endif %}
 
-    <h3>Évolution sur plusieurs années</h3>
-
-    <canvas id="graphique"></canvas>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const donnees = {{ evolution|tojson }};
-
-        new Chart(document.getElementById("graphique"), {
-            type: "line",
-            data: {
-                labels: donnees.map(d => d.annee),
-                datasets: [{
-                    label: "Effectif",
-                    data: donnees.map(d => d.effectif),
-                    borderColor: "#2E74B5",
-                    tension: 0.2,
-                }],
-            },
-        });
-    </script>
+    <script src="{{ url_for('static', filename='JS/cascade.js') }}"></script>
 {% endblock %}
