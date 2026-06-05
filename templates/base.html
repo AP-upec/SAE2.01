@@ -2,16 +2,19 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block titre %}Données de santé{% endblock %}</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')
-        }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
         <header>
             <h1>Données de santé libérale</h1>
             <nav>
-                <a href="{{ url_for('accueil.index') }}">Accueil</a>
-                <a href="{{ url_for('effectifs.afficher') }}">Effectifs</a>
+                <a href="{{ url_for('accueil.index') }}" class="{{ 'actif' if request.endpoint == 'accueil.index' }}">Accueil</a>
+                <a href="{{ url_for('effectifs.afficher') }}" class="{{ 'actif' if request.endpoint == 'effectifs.afficher' }}">Effectifs</a>
             </nav>
         </header>
         <main>
