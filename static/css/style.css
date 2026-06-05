@@ -1,8 +1,8 @@
 /* =====================================================================
    Charte graphique — Données de santé libérale (SAE2.01)
-   Direction : institutionnel éditorial / santé publique
-   - Palette pétrole + accent corail sur fond papier
-   - Titres : Fraunces (serif) · Texte : IBM Plex Sans
+   Direction : institutionnel / santé publique
+   - Palette vert émeraude (monochrome) sur fond papier
+   - Titres : Hanken Grotesk · Texte : IBM Plex Sans
    Tous les réglages passent par des variables CSS (design tokens)
    définies dans :root, pour un style cohérent et facile à ajuster.
    ===================================================================== */
@@ -21,11 +21,11 @@
     --c-muted:        #5c6b69;   /* texte secondaire                   */
 
     /* Couleurs — marque */
-    --c-primary:      #0e5c63;   /* pétrole : entêtes, actions         */
-    --c-primary-700:  #0a464c;   /* survol / état pressé               */
-    --c-primary-050:  #e3eeee;   /* fond teinté (état actif, en-têtes) */
-    --c-accent:       #e4572e;   /* corail : liens, focus, accents     */
-    --c-accent-700:   #c3431f;
+    --c-primary:      #16715c;   /* vert émeraude : entêtes, actions   */
+    --c-primary-700:  #0f4f40;   /* survol / état pressé               */
+    --c-primary-050:  #e4efeb;   /* fond teinté (état actif, en-têtes) */
+    --c-accent:       #16715c;   /* liens, focus (même famille verte)  */
+    --c-accent-700:   #0f4f40;
 
     /* Couleurs — états */
     --c-border:       #e2ddd3;   /* bordures chaudes                   */
@@ -33,7 +33,7 @@
     --c-danger:       #c0392b;
 
     /* Typographie */
-    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-display: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
     --font-body:    "IBM Plex Sans", system-ui, -apple-system, sans-serif;
 
     --fs-900: clamp(2rem, 1.4rem + 2.4vw, 3rem);      /* h1            */
@@ -98,7 +98,8 @@ h1, h2, h3 {
     line-height: var(--lh-tight);
     color: var(--c-ink);
     margin: 0 0 var(--space-4);
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.015em;
 }
 h2 { font-size: var(--fs-800); }
 h3 {
@@ -132,7 +133,6 @@ header {
     background: linear-gradient(180deg, var(--c-primary), var(--c-primary-700));
     color: #fff;
     padding: var(--space-5) var(--space-6);
-    border-bottom: 3px solid var(--c-accent);
     box-shadow: var(--shadow-md);
 }
 header h1 {
@@ -238,7 +238,7 @@ select {
     appearance: none;
     -webkit-appearance: none;
     padding-right: 2.25rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230e5c63' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2316715c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.9rem center;
     cursor: pointer;
