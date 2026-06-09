@@ -12,39 +12,54 @@
 /* ------------------------------------------------------------------ */
 :root {
     /* Couleurs — surfaces */
-    --c-paper:        #f5f8fc;   /* fond de page (bleu très clair)     */
-    --c-surface:      #ffffff;   /* cartes, tableaux                   */
-    --c-surface-alt:  #eaf0f9;   /* zones légèrement teintées          */
+    /* fond de page (bleu très clair) */
+    --c-paper: #f5f8fc;
+    /* cartes, tableaux */
+    --c-surface: #ffffff;
+    /* zones légèrement teintées */
+    --c-surface-alt: #eaf0f9;
 
     /* Couleurs — texte */
-    --c-ink:          #1b2a4a;   /* texte principal (navy sombre)      */
-    --c-muted:        #5a647a;   /* texte secondaire                   */
+    /* texte principal (navy sombre) */
+    --c-ink: #1b2a4a;
+    /* texte secondaire */
+    --c-muted: #5a647a;
 
     /* Couleurs — marque (bleu dominant) */
-    --c-primary:      #0474ba;   /* bleu : entêtes, actions, liens     */
-    --c-primary-700:  #035a90;   /* survol / état pressé               */
-    --c-primary-050:  #e3f1fb;   /* fond teinté (état actif, en-têtes) */
+    /* bleu : entêtes, actions, liens */
+    --c-primary: #0474ba;
+    /* survol / état pressé */
+    --c-primary-700: #035a90;
+    /* fond teinté (état actif, en-têtes) */
+    --c-primary-050: #e3f1fb;
     /* Accent orange (chips, courbe, focus) */
-    --c-accent:       #f17720;   /* orange : accents                   */
-    --c-accent-700:   #d9610f;
+    /* orange : accents */
+    --c-accent: #f17720;
+    --c-accent-700: #d9610f;
 
     /* Couleurs — états */
-    --c-border:       #dbe3ee;   /* bordures (gris bleuté)             */
-    --c-success:      #2f7d52;
-    --c-danger:       #c0392b;
+    /* bordures (gris bleuté) */
+    --c-border: #dbe3ee;
+    --c-success: #2f7d52;
+    --c-danger: #c0392b;
 
     /* Typographie */
     --font-display: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
-    --font-body:    "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
 
-    --fs-900: clamp(2rem, 1.4rem + 2.4vw, 3rem);      /* h1            */
-    --fs-800: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);    /* h2            */
-    --fs-700: 1.2rem;                                  /* h3            */
-    --fs-400: 1rem;                                    /* corps         */
-    --fs-300: 0.875rem;                                /* petit / méta  */
+    /* h1 */
+    --fs-900: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+    /* h2 */
+    --fs-800: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+    /* h3 */
+    --fs-700: 1.2rem;
+    /* corps */
+    --fs-400: 1rem;
+    /* petit / méta */
+    --fs-300: 0.875rem;
 
     --lh-tight: 1.15;
-    --lh-base:  1.6;
+    --lh-base: 1.6;
 
     /* Espacements (base 4px) */
     --space-1: 0.25rem;
@@ -74,7 +89,9 @@
 /* ------------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+    -webkit-text-size-adjust: 100%;
+}
 
 body {
     margin: 0;
@@ -92,7 +109,9 @@ body {
     background-repeat: no-repeat;
 }
 
-h1 { font-size: var(--fs-900); }
+h1 {
+    font-size: var(--fs-900);
+}
 
 h1, h2, h3 {
     font-family: var(--font-display);
@@ -102,7 +121,9 @@ h1, h2, h3 {
     font-weight: 700;
     letter-spacing: -0.015em;
 }
-h2 { font-size: var(--fs-800); }
+h2 {
+    font-size: var(--fs-800);
+}
 h3 {
     font-size: var(--fs-700);
     font-family: var(--font-body);
@@ -111,7 +132,9 @@ h3 {
     color: var(--c-primary-700);
 }
 
-p { margin: 0 0 var(--space-4); }
+p {
+    margin: 0 0 var(--space-4);
+}
 
 a {
     color: var(--c-primary);
@@ -119,7 +142,9 @@ a {
     text-underline-offset: 3px;
     transition: color var(--transition);
 }
-a:hover { color: var(--c-primary-700); text-decoration-color: currentColor; }
+a:hover {
+    color: var(--c-primary-700); text-decoration-color: currentColor;
+}
 
 :focus-visible {
     outline: 3px solid color-mix(in srgb, var(--c-accent) 55%, transparent);
@@ -158,7 +183,9 @@ header nav a {
     border-radius: var(--radius-sm);
     transition: background var(--transition), color var(--transition);
 }
-header nav a:hover { background: rgba(255, 255, 255, 0.14); }
+header nav a:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
 header nav a.actif {
     background: var(--c-surface);
     color: var(--c-primary-700);
@@ -267,8 +294,12 @@ button,
     transition: background var(--transition), transform var(--transition);
 }
 button:hover,
-.bouton:hover { background: var(--c-primary-700); }
-button:active { transform: translateY(1px); }
+.bouton:hover {
+    background: var(--c-primary-700);
+}
+button:active {
+    transform: translateY(1px);
+}
 
 /* ------------------------------------------------------------------ */
 /*  6. TABLEAUX                                                        */
@@ -298,8 +329,12 @@ tbody td {
 }
 /* Colonnes chiffrées (effectif, densité) alignées à droite */
 tbody td:nth-child(n + 2),
-thead th:nth-child(n + 2) { text-align: right; font-variant-numeric: tabular-nums; }
-tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--c-surface-alt) 45%, transparent); }
+thead th:nth-child(n + 2) {
+    text-align: right; font-variant-numeric: tabular-nums;
+}
+tbody tr:nth-child(even) td {
+    background: color-mix(in srgb, var(--c-surface-alt) 45%, transparent);
+}
 
 /* ------------------------------------------------------------------ */
 /*  7. GRAPHIQUE (Chart.js)                                            */
@@ -331,7 +366,9 @@ footer p {
     justify-content: center;
     margin: 0;
 }
-.logo_footer { width: 4rem; height: auto; }
+.logo_footer {
+    width: 4rem; height: auto;
+}
 
 /* ------------------------------------------------------------------ */
 /*  9. RESPONSIVE                                                      */
