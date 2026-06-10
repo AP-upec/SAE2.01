@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block titre %}Effectifs{% endblock %}
+{% block titre %}Prescriptions{% endblock %}
 
 {% block contenu %}
-    <h2>Effectifs des professionnels de santé</h2>
+    <h2>Prescriptions</h2>
 
-    <form method="get" action="{{ url_for('effectifs.afficher') }}" class="formulaire">
+    <form method="get" action="{{ url_for('prescriptions.afficher') }}" class="formulaire">
         <label>Région
             <select id="region">
-                <option value="">-- Choisir --</option>
+                <option value="">Choisir</option>
                 {% for r in regions %}
                     <option value="{{ r.id }}" {% if r.id == region_id %}selected{% endif %}>{{ r.libelle }}</option>
                 {% endfor %}
@@ -17,7 +17,7 @@
 
         <label>Département
             <select id="departement" name="departement_id">
-                <option value="">-- Choisir --</option>
+                <option value="">Choisir</option>
                 {% for d in departements %}
                     <option value="{{ d.id }}" {% if dept and d.id == dept.id %}selected{% endif %}>{{ d.code }} – {{ d.libelle }}</option>
                 {% endfor %}
@@ -26,16 +26,25 @@
 
         <label>Profession
             <select name="profession_id">
-                <option value="">-- Choisir --</option>
+                <option value="">Choisir</option>
                 {% for p in professions %}
                     <option value="{{ p.id }}" {% if prof and p.id == prof.id %}selected{% endif %}>{{ p.libelle }}</option>
                 {% endfor %}
             </select>
         </label>
 
+        <label>Prescription
+            <select name="prescription_id">
+                <option value="">Choisir</option>
+                {% for p in prescriptions %}
+                    <option value="{{ p.id }}" {% if presc and p.id == presc.id %}selected{% endif %}>{{ p.libelle }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
         <label>Année
             <select name="annee">
-                <option value="">-- Choisir --</option>
+                <option value="">Choisir</option>
                 {% for a in annees %}
                     <option value="{{ a }}" {% if a == annee %}selected{% endif %}>{{ a }}</option>
                 {% endfor %}
@@ -50,20 +59,14 @@
 
         {% if resultats %}
             <table>
-                <thead>
-                    <tr>
-                        <th>Année</th>
-                        <th>Effectif</th>
-                        <th>Densité</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Poste</th><th>Montant total (€)</th><th>Montant moyen (€)</th></tr></thead>
                 <tbody>
                     {% for r in resultats %}
-                        <tr>
-                            <td>{{ r.annee }}</td>
-                            <td>{{ r.effectif }}</td>
-                            <td>{{ r.densite }}</td>
-                        </tr>
+                    <tr>
+                        <td>{{ r.libelle_poste_prescription }}</td>
+                        <td>{{ r.montant_total_prescription }}</td>
+                        <td>{{ r.montant_moyen_prescription }}</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -82,8 +85,8 @@
                     data: {
                         labels: donnees.map(d => d.annee),
                         datasets: [{
-                            label: "Effectif",
-                            data: donnees.map(d => d.effectif),
+                            label: "Prescriptions totales (€)",
+                            data: donnees.map(d => d.montant_total_prescription),
                             borderColor: "#f17720",
                             backgroundColor: "rgba(241, 119, 32, 0.12)",
                             tension: 0.2,

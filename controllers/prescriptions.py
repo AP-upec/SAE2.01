@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 from models.db import Session
-from models.dimensions import Region, ProfessionSante, Departement
+from models.dimensions import Region, ProfessionSante, Departement, TypePrescription
 from services.ameli_api import AmeliAPI
 bp_prescriptions = Blueprint("prescriptions", __name__)
 api = AmeliAPI()
@@ -12,12 +12,15 @@ def afficher():
     les prescriptions correspondantes."""
     
     profession_id = request.args.get("profession_id", type=int)
+    prescription_id = request.args.get("prescription_id", type=int)
     departement_id = request.args.get("departement_id", type=int)
     annee = request.args.get("annee", type=int)
     session = Session()
     try:
         # Données pour alimenter le formulaire
         regions = session.query(Region).order_by(Region.libelle).all()
+        prescriptions = session.query(TypePrescription).order_by(TypePrescription.libelle).all()
+        presc = session.get(TypePrescription, prescription_id) if prescription_id else None
         professions = (session.query(ProfessionSante)
                        .order_by(ProfessionSante.libelle).all())
         prof = session.get(ProfessionSante, profession_id) if profession_id else None
@@ -35,7 +38,7 @@ def afficher():
             evolution = api.get_evolution_prescriptions(prof.libelle, dept.code)
         return render_template(
             "prescriptions.html",
-            regions=regions, professions=professions, annees=ANNEES,
+            regions=regions, professions=professions, prescriptions=prescriptions, presc=presc, annees=ANNEES,
             departements=departements, region_id=region_id,
             prof=prof, dept=dept, annee=annee,
             resultats=resultats, evolution=evolution or [],

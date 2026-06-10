@@ -31,6 +31,33 @@ class AmeliAPI:
         {"select": "annee,effectif,densite", "where": where,
         "order_by": "annee", "limit": 100},
         )
+    
+    def get_prescriptions(self, profession, departement_code, annee):
+        """Postes de prescription (montants) pour une profession, un département et une année."""
+        where = (
+        f"profession_sante=\"{profession}\" AND "
+        f"departement=\"{departement_code}\" AND "
+        f"year(annee)={annee} AND "
+        f"libelle_poste_prescription!=\"total postes de prescriptions\""
+        )
+        return self._requete(
+        "prescriptions",
+        {"select": "libelle_poste_prescription,montant_total_prescription,montant_moyen_prescription",
+        "where": where, "limit": 100},
+        )
+
+    def get_evolution_prescriptions(self, profession, departement_code):
+        """Montant total de prescriptions par année (ligne agrégée)."""
+        where = (
+        f"profession_sante=\"{profession}\" AND "
+        f"departement=\"{departement_code}\" AND "
+        f"libelle_poste_prescription=\"total postes de prescriptions\""
+        )
+        return self._requete(
+        "prescriptions",
+        {"select": "annee,montant_total_prescription", "where": where,
+        "order_by": "annee", "limit": 100},
+        )
 
     def _requete(self, dataset, params):
         """Méthode privée : effectue une requête GET et gère les erreurs."""
