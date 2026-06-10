@@ -4,6 +4,7 @@ from config import Config
 from controllers.accueil import bp_accueil
 from controllers.api import bp_api
 from controllers.effectifs import bp_effectifs
+from controllers.prescriptions import bp_prescriptions
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -12,6 +13,7 @@ app.config.from_object(Config)
 app.register_blueprint(bp_accueil)
 app.register_blueprint(bp_api)
 app.register_blueprint(bp_effectifs)
+app.register_blueprint(bp_prescriptions)
 
 # Gestion des erreurs
 @app.errorhandler(404)

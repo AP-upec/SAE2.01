@@ -14,7 +14,8 @@
             <h1>Données de santé libérale</h1>
             <nav>
                 <a href="{{ url_for('accueil.index') }}" class="{{ 'actif' if request.endpoint == 'accueil.index' }}">Accueil</a>
-                <a href="{{ url_for('effectifs.afficher') }}" class="{{ 'actif' if request.endpoint == 'effectifs.afficher' }}">professionnel de santé</a>
+                <a href="{{ url_for('effectifs.afficher') }}" class="{{ 'actif' if request.endpoint == 'effectifs.afficher' }}">Professionnel de santé</a>
+                <a href="{{ url_for('prescriptions.afficher') }}" class="{{ 'actif' if request.endpoint == 'prescriptions.afficher' }}">Prescriptions</a>
             </nav>
         </header>
         <main>
