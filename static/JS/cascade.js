@@ -13,7 +13,7 @@ document.getElementById("region").addEventListener("change", async (e) => {
     const selectDept = document.getElementById("departement");
 
     // Vider la liste
-    selectDept.innerHTML = '<option value="">-- Choisir --</option>';
+    selectDept.innerHTML = '<option value="">Choisir</option>';
 
     if (!regionId) return;
 
