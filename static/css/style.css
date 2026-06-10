@@ -8,7 +8,7 @@
    ===================================================================== */
 
 /* ------------------------------------------------------------------ */
-/*  1. TOKENS (variables CSS)                                          */
+/*  1. TOKENS (variables CSS)                                         */
 /* ------------------------------------------------------------------ */
 :root {
     /* Couleurs — surfaces */
@@ -85,7 +85,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  2. RESET & BASE                                                    */
+/*  2. RESET & BASE                                                   */
 /* ------------------------------------------------------------------ */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -153,7 +153,7 @@ a:hover {
 }
 
 /* ------------------------------------------------------------------ */
-/*  3. EN-TÊTE & NAVIGATION                                            */
+/*  3. EN-TÊTE & NAVIGATION                                           */
 /* ------------------------------------------------------------------ */
 header {
     background: linear-gradient(180deg, var(--c-primary), var(--c-primary-700));
@@ -192,7 +192,7 @@ header nav a.actif {
 }
 
 /* ------------------------------------------------------------------ */
-/*  4. CONTENU PRINCIPAL                                               */
+/*  4. CONTENU PRINCIPAL                                              */
 /* ------------------------------------------------------------------ */
 main {
     width: 100%;
@@ -227,7 +227,7 @@ main li {
 }
 
 /* ------------------------------------------------------------------ */
-/*  5. FORMULAIRES (sélection profession / département / année)        */
+/*  5. FORMULAIRES (sélection profession / département / année)       */
 /* ------------------------------------------------------------------ */
 .formulaire {
     display: flex;
@@ -302,7 +302,7 @@ button:active {
 }
 
 /* ------------------------------------------------------------------ */
-/*  6. TABLEAUX                                                        */
+/*  6. TABLEAUX                                                       */
 /* ------------------------------------------------------------------ */
 table {
     width: 100%;
@@ -337,7 +337,7 @@ tbody tr:nth-child(even) td {
 }
 
 /* ------------------------------------------------------------------ */
-/*  7. GRAPHIQUE (Chart.js)                                            */
+/*  7. GRAPHIQUE (Chart.js)                                           */
 /* ------------------------------------------------------------------ */
 #graphique {
     background: var(--c-surface);
@@ -349,7 +349,7 @@ tbody tr:nth-child(even) td {
 }
 
 /* ------------------------------------------------------------------ */
-/*  8. PIED DE PAGE                                                    */
+/*  8. PIED DE PAGE                                                   */
 /* ------------------------------------------------------------------ */
 footer {
     flex-shrink: 0;
@@ -371,7 +371,7 @@ footer p {
 }
 
 /* ------------------------------------------------------------------ */
-/*  9. RESPONSIVE                                                      */
+/*  9. RESPONSIVE                                                     */
 /* ------------------------------------------------------------------ */
 @media (max-width: 640px) {
     header { padding: var(--space-4); }
@@ -383,4 +383,128 @@ footer p {
 /* Accessibilité : respect des préférences de mouvement réduit */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+
+/* ------------------------------------------------------------------ */
+/*  10. ERREURS                                                       */
+/* ------------------------------------------------------------------ */
+
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.error-card {
+    width: 100%;
+    max-width: 640px;
+
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-top: 4px solid var(--c-accent);
+
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 3.5rem;
+    margin-bottom: var(--space-4);
+    line-height: 1;
+}
+
+.error-card h2 {
+    color: var(--c-primary-700);
+    margin-bottom: var(--space-3);
+}
+
+.error-message {
+    color: var(--c-muted);
+    margin-bottom: var(--space-6);
+    max-width: 50ch;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.error-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* Bouton principal */
+.error-actions .btn-primary {
+    display: inline-block;
+
+    background: var(--c-primary);
+    color: #fff;
+
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-sm);
+
+    text-decoration: none;
+    font-weight: 600;
+
+    transition:
+        background var(--transition),
+        transform var(--transition);
+}
+
+.error-actions .btn-primary:hover {
+    background: var(--c-primary-700);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Bouton secondaire */
+.error-actions .btn-secondary {
+    font: inherit;
+
+    background: var(--c-surface-alt);
+    color: var(--c-ink);
+
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+
+    padding: var(--space-3) var(--space-5);
+    cursor: pointer;
+
+    transition:
+        background var(--transition),
+        border-color var(--transition);
+}
+
+.error-actions .btn-secondary:hover {
+    background: var(--c-primary-050);
+    border-color: var(--c-primary);
+}
+
+/* Variante erreur critique */
+.error-card.erreur-critique {
+    border-top-color: var(--c-danger);
+}
+
+.error-card.erreur-critique .error-icon {
+    color: var(--c-danger);
+}
+
+@media (max-width: 640px) {
+    .error-card {
+        padding: var(--space-5);
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .error-actions .btn-primary,
+    .error-actions .btn-secondary {
+        width: 100%;
+    }
 }
