@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block titre %}Comparaison{% endblock %}
+
+{% block contenu %}
+    <h2>Comparer deux départements</h2>
+
+    <form method="get" action="{{ url_for('comparaison.afficher') }}" class="formulaire formulaire-comparaison">
+        <label>Profession
+            <select name="profession_id">
+                <option value="">Choisir</option>
+                {% for p in professions %}
+                    <option value="{{ p.id }}" {% if profession and p.id == profession.id %}selected{% endif %}>{{ p.libelle }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Année
+            <select name="annee">
+                <option value="">Choisir</option>
+                {% for a in annees %}
+                    <option value="{{ a }}" {% if a == annee %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="bloc-selecteur">
+            <h3>Département 1</h3>
+            <label>Région
+                <select id="region-1" name="region_1_id" data-departement-select="departement-1">
+                    <option value="">Choisir</option>
+                    {% for r in regions %}
+                        <option value="{{ r.id }}" {% if r.id == region_1_id %}selected{% endif %}>{{ r.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Département
+                <select id="departement-1" name="departement_1_id">
+                    <option value="">Choisir</option>
+                    {% for d in departements_1 %}
+                        <option value="{{ d.id }}" {% if departement_1 and d.id == departement_1.id %}selected{% endif %}>{{ d.code }} – {{ d.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="bloc-selecteur">
+            <h3>Département 2</h3>
+            <label>Région
+                <select id="region-2" name="region_2_id" data-departement-select="departement-2">
+                    <option value="">Choisir</option>
+                    {% for r in regions %}
+                        <option value="{{ r.id }}" {% if r.id == region_2_id %}selected{% endif %}>{{ r.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>Département
+                <select id="departement-2" name="departement_2_id">
+                    <option value="">Choisir</option>
+                    {% for d in departements_2 %}
+                        <option value="{{ d.id }}" {% if departement_2 and d.id == departement_2.id %}selected{% endif %}>{{ d.code }} – {{ d.libelle }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <button type="submit">Comparer</button>
+    </form>
+
+    {% if message %}
+        <p class="message-info">{{ message }}</p>
+    {% endif %}
+
+    {% if comparaison %}
+        <h2>{{ profession.libelle }} – {{ annee }}</h2>
+
+        <div class="cartes-comparaison">
+            {% for item in comparaison %}
+                <section class="carte-comparaison" style="border-top-color: {{ item.couleur }}">
+                    <h3>{{ item.departement.code }} {{ item.departement.libelle }}</h3>
+                    {% if item.resultat %}
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Effectif</th>
+                                    <td>{{ item.resultat.effectif }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Densité</th>
+                                    <td>{{ item.resultat.densite }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Aucune donnée disponible pour ce département.</p>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        </div>
+
+        {% if evolution_1 or evolution_2 %}
+            <h3>Évolution des effectifs</h3>
+            <canvas id="graphique-comparaison"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const comparaisonEvolution = {
+                    dept1: {
+                        nom: {{ (departement_1.code ~ " " ~ departement_1.libelle)|tojson }},
+                        donnees: {{ evolution_1|tojson }},
+                    },
+                    dept2: {
+                        nom: {{ (departement_2.code ~ " " ~ departement_2.libelle)|tojson }},
+                        donnees: {{ evolution_2|tojson }},
+                    },
+                };
+            </script>
+        {% endif %}
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='JS/comparaison.js') }}"></script>
+{% endblock %}

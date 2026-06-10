@@ -337,9 +337,60 @@ tbody tr:nth-child(even) td {
 }
 
 /* ------------------------------------------------------------------ */
-/*  7. GRAPHIQUE (Chart.js)                                           */
+/*  7. COMPARAISON                                                    */
 /* ------------------------------------------------------------------ */
-#graphique {
+.formulaire-comparaison {
+    align-items: stretch;
+}
+.bloc-selecteur {
+    display: grid;
+    gap: var(--space-3);
+    flex: 1 1 280px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    background: color-mix(in srgb, var(--c-primary-050) 35%, #fff);
+}
+.bloc-selecteur h3 {
+    margin-bottom: 0;
+}
+.cartes-comparaison {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+    margin-bottom: var(--space-6);
+}
+.carte-comparaison {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-top: 4px solid var(--c-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    box-shadow: var(--shadow-sm);
+}
+.carte-comparaison table {
+    margin-bottom: 0;
+}
+.carte-comparaison tbody th {
+    text-align: left;
+    color: var(--c-muted);
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--c-border);
+}
+.message-info {
+    background: var(--c-primary-050);
+    border-left: 3px solid var(--c-primary);
+    border-radius: var(--radius-sm);
+    color: var(--c-primary-700);
+    padding: var(--space-3) var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+/* ------------------------------------------------------------------ */
+/*  8. GRAPHIQUE (Chart.js)                                           */
+/* ------------------------------------------------------------------ */
+#graphique,
+#graphique-comparaison {
     background: var(--c-surface);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-md);
@@ -349,7 +400,7 @@ tbody tr:nth-child(even) td {
 }
 
 /* ------------------------------------------------------------------ */
-/*  8. PIED DE PAGE                                                   */
+/*  9. PIED DE PAGE                                                   */
 /* ------------------------------------------------------------------ */
 footer {
     flex-shrink: 0;
@@ -371,13 +422,14 @@ footer p {
 }
 
 /* ------------------------------------------------------------------ */
-/*  9. RESPONSIVE                                                     */
+/*  10. RESPONSIVE                                                    */
 /* ------------------------------------------------------------------ */
 @media (max-width: 640px) {
     header { padding: var(--space-4); }
     main { padding: var(--space-6) var(--space-4); }
     .formulaire { flex-direction: column; align-items: stretch; }
     .formulaire button { width: 100%; }
+    .cartes-comparaison { grid-template-columns: 1fr; }
 }
 
 /* Accessibilité : respect des préférences de mouvement réduit */
@@ -387,7 +439,7 @@ footer p {
 
 
 /* ------------------------------------------------------------------ */
-/*  10. ERREURS                                                       */
+/*  11. ERREURS                                                       */
 /* ------------------------------------------------------------------ */
 
 .error-container {

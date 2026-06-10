@@ -15,6 +15,7 @@
             <nav>
                 <a href="{{ url_for('accueil.afficher') }}" class="{{ 'actif' if request.endpoint == 'accueil.afficher' }}">Accueil</a>
                 <a href="{{ url_for('prescriptions.afficher') }}" class="{{ 'actif' if request.endpoint == 'prescriptions.afficher' }}">Prescriptions</a>
+                <a href="{{ url_for('comparaison.afficher') }}" class="{{ 'actif' if request.endpoint == 'comparaison.afficher' }}">Comparaison</a>
             </nav>
         </header>
         <main>
