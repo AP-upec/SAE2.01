@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request
 from models.db import Session
-from models.dimensions import Region, ProfessionSante, Departement, TypePrescription
+from models.dimensions import Region, ProfessionSante, Departement, TypeHonoraire
 from services.ameli_api import AmeliAPI
-bp_prescriptions = Blueprint("honoraires", __name__)
+bp_honoraires = Blueprint("honoraires", __name__)
 api = AmeliAPI()
 # Années disponibles dans le dataset ameli (de la plus récente à la plus ancienne)
 ANNEES = list(range(2024, 2009, -1))
-@bp_prescriptions.route("/honoraires")
+@bp_honoraires.route("/honoraires")
 def afficher():    
     """Affiche le formulaire de sélection et, si la sélection est complète,
     les honoraires correspondants."""
@@ -19,7 +19,7 @@ def afficher():
     try:
         # Données pour alimenter le formulaire
         regions = session.query(Region).order_by(Region.libelle).all()
-        honoraires = session.query(TypeHonoraire).order_by(TypeHonoraire.libelle).all()
+        honoraires = session.query(TypeHonoraire).order_by(TypeHonoraire.niveau_1).all()
         honor= session.get(TypeHonoraire, honoraire_id) if honoraire_id else None
         professions = (session.query(ProfessionSante)
                        .order_by(ProfessionSante.libelle).all())
