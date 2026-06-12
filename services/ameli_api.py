@@ -1,10 +1,19 @@
+import json
+import time
+
 import requests
+
 class AmeliAPI:
     """Service d'accès à l'API data.ameli.fr."""
+
     BASE_URL = "https://data.ameli.fr/api/explore/v2.1/catalog/datasets"
-    def __init__(self, timeout=10):
+
+    def __init__(self, timeout=10, cache_duration=300):
         self._timeout = timeout
         self._session = requests.Session()
+        self._cache = {}
+        self._cache_duration = cache_duration
+
     def get_effectifs(self, profession, departement_code, annee):
         """Effectifs pour une profession, un département et une année.Retourne une liste de dictionnaires {annee, effectif, densite}."""
         where = (
@@ -72,14 +81,27 @@ class AmeliAPI:
         "order_by": "annee", "limit": 100},
         )
 
-
     def _requete(self, dataset, params):
-        """Méthode privée : effectue une requête GET et gère les erreurs."""
         url = f"{self.BASE_URL}/{dataset}/records"
+        key = url + "?" + json.dumps(params, sort_keys=True)
+
+        # 1) Vérifier le cache
+        if key in self._cache:
+            timestamp, data = self._cache[key]
+            if time.time() - timestamp < self._cache_duration:
+                return data
+
+        # 2) Sinon, appel API réel
         try:
             resp = self._session.get(url, params=params, timeout=self._timeout)
             resp.raise_for_status()
-            return resp.json().get("results", [])
+            data = resp.json().get("results", [])
+
+            # 3) Stocker dans le cache
+            self._cache[key] = (time.time(), data)
+
+            return data
+
         except requests.RequestException as e:
             print(f"[AmeliAPI] Erreur : {e}")
             return []
