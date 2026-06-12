@@ -6,6 +6,7 @@ from controllers.api import bp_api
 from controllers.prescriptions import bp_prescriptions
 from controllers.comparaison import bp_comparaison
 from controllers.honoraires import bp_honoraires
+from controllers.auth import bp_auth
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -16,6 +17,7 @@ app.register_blueprint(bp_api)
 app.register_blueprint(bp_prescriptions)
 app.register_blueprint(bp_comparaison)
 app.register_blueprint(bp_honoraires)
+app.register_blueprint(bp_auth)
 
 # Gestion des erreurs
 @app.errorhandler(404)

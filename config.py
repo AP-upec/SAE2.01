@@ -8,7 +8,10 @@ class Config:
     DB_HOST = os.getenv("DB_HOST")
     DB_NAME = os.getenv("DB_NAME")
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
-    
+    # Identifiants administrateur (login simple) — définis dans le .env
+    ADMIN_USER = os.getenv("ADMIN_USER", "admin")
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+
     @classmethod
     def db_url(cls):
         """Construit l'URL de connexion MySQL."""

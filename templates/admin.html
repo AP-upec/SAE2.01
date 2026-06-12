@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block titre %}Statistiques{% endblock %}
+
+{% block contenu %}
+    <h2>Statistiques de la base</h2>
+    <p><a href="{{ url_for('auth.logout') }}">Se déconnecter</a></p>
+
+    <table>
+        <thead>
+            <tr><th>Dimension</th><th>Nombre</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Régions</td><td>{{ stats.regions }}</td></tr>
+            <tr><td>Départements</td><td>{{ stats.departements }}</td></tr>
+            <tr><td>Professions de santé</td><td>{{ stats.professions }}</td></tr>
+            <tr><td>Types d'honoraires</td><td>{{ stats.types_honoraires }}</td></tr>
+            <tr><td>Types de prescriptions</td><td>{{ stats.types_prescriptions }}</td></tr>
+        </tbody>
+    </table>
+{% endblock %}

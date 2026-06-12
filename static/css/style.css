@@ -253,7 +253,8 @@ main li {
 
 select,
 input[type="number"],
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
     font-family: inherit;
     font-size: var(--fs-400);
     color: var(--c-ink);

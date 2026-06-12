@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block titre %}Connexion admin{% endblock %}
+
+{% block contenu %}
+    <h2>Connexion administrateur</h2>
+
+    {% if erreur %}
+        <p class="message-info">{{ erreur }}</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('auth.login') }}" class="formulaire">
+        <label>Identifiant
+            <input type="text" name="identifiant" required>
+        </label>
+        <label>Mot de passe
+            <input type="password" name="mot_de_passe" required>
+        </label>
+        <button type="submit">Se connecter</button>
+    </form>
+{% endblock %}
