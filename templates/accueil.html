@@ -6,6 +6,15 @@
     <h2>Effectifs des professionnels de santé</h2>
 
     <form method="get" action="{{ url_for('accueil.afficher') }}" class="formulaire">
+        <label>Profession
+            <select name="profession_id">
+                <option value="">Choisir</option>
+                {% for p in professions %}
+                    <option value="{{ p.id }}" {% if prof and p.id == prof.id %}selected{% endif %}>{{ p.libelle }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
         <label>Région
             <select id="region">
                 <option value="">Choisir</option>
@@ -20,15 +29,6 @@
                 <option value="">Choisir</option>
                 {% for d in departements %}
                     <option value="{{ d.id }}" {% if dept and d.id == dept.id %}selected{% endif %}>{{ d.code }} – {{ d.libelle }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label>Profession
-            <select name="profession_id">
-                <option value="">Choisir</option>
-                {% for p in professions %}
-                    <option value="{{ p.id }}" {% if prof and p.id == prof.id %}selected{% endif %}>{{ p.libelle }}</option>
                 {% endfor %}
             </select>
         </label>
