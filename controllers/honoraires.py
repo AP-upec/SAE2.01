@@ -34,7 +34,7 @@ def afficher():
         # Résultats uniquement si la sélection est complète
         resultats = evolution = None
         if prof and dept and annee:
-            resultats = api.get_honoraires(prof.libelle, dept.code, annee)
+            resultats = api.get_honoraires(prof.libelle, dept.code, annee, honor.niveau_1 if honor else None)
             #evolution = api.get_evolution_honoraires(prof.libelle, dept.code)
         return render_template(
             "honoraires.html",

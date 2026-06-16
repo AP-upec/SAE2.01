@@ -59,13 +59,13 @@
 
         {% if resultats %}
             <table>
-                <thead><tr><th>Poste</th><th>Montant total (€)</th><th>Montant moyen (€)</th></tr></thead>
+                <thead><tr><th>Type d'honoraires</th><th>Montant total (€)</th><th>Montant moyen (€)</th></tr></thead>
                 <tbody>
                     {% for r in resultats %}
                     <tr>
-                        <td>{{ r.type_honoraires_niveau_1 }}</td>
-                        <td>{{ r.type_honoraires_niveau_2 }}</td>
-                        <td>{{ r.type_honoraires_niveau_3 }}</td>
+                        <td>{{ [r.type_honoraires_niveau_1, r.type_honoraires_niveau_2, r.type_honoraires_niveau_3]|select|join(" › ") }}</td>
+                        <td>{{ r.montant_honoraires|round|int if r.montant_honoraires is not none else "—" }}</td>
+                        <td>{{ r.montant_honoraires_moyens|round|int if r.montant_honoraires_moyens is not none else "—" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

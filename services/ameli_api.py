@@ -68,17 +68,21 @@ class AmeliAPI:
         "order_by": "annee", "limit": 100},
         )
     
-    def get_honoraires(self,type,profession,departement_code): 
-        """Honoraires."""
-        where = (f"profession_sante=\"{profession}\" AND "
+    def get_honoraires(self, profession, departement_code, annee, type_honoraire=None):
+        """Honoraires (montants) pour une profession, un département et une année.
+        Filtre éventuellement sur un type d'honoraires (niveau 1)."""
+        where = (
+        f"profession_sante=\"{profession}\" AND "
         f"departement=\"{departement_code}\" AND "
-        f"type_honoraires_niveau_1=\"{type}\""
-
+        f"year(annee)={annee}"
         )
+        if type_honoraire:
+            where += f" AND type_honoraires_niveau_1=\"{type_honoraire}\""
         return self._requete(
-        "Professionnels de santé libéraux : montants des honoraires par catégorie et par territoire (département, région)",
-        {"select": "annee,departement,type_honoraires_niveau_1,type_honoraires_niveau_2,type_honoraires_niveau_3", "where": where,
-        "order_by": "annee", "limit": 100},
+        "honoraires-detailles",
+        {"select": "type_honoraires_niveau_1,type_honoraires_niveau_2,type_honoraires_niveau_3,montant_honoraires,montant_honoraires_moyens",
+        "where": where,
+        "order_by": "honoraires_ordre_niv_1,honoraires_ordre_niv_2,honoraires_ordre_niv_3", "limit": 100},
         )
 
     def _requete(self, dataset, params):
