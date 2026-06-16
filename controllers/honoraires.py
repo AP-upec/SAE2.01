@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request
 from models.db import Session
 from models.dimensions import Region, ProfessionSante, Departement, TypeHonoraire
 from services.ameli_api import AmeliAPI
+from sqlalchemy import func
 bp_honoraires = Blueprint("honoraires", __name__)
 api = AmeliAPI()
 # Années disponibles dans le dataset ameli (de la plus récente à la plus ancienne)
@@ -19,7 +20,11 @@ def afficher():
     try:
         # Données pour alimenter le formulaire
         regions = session.query(Region).order_by(Region.libelle).all()
-        honoraires = session.query(TypeHonoraire).order_by(TypeHonoraire.niveau_1).all()
+        # Un seul type par niveau 1 (sinon "Actes", "Rémunérations forfaitaires"... apparaissent en double)
+        ids_types = session.query(func.min(TypeHonoraire.id)).group_by(TypeHonoraire.niveau_1)
+        honoraires = (session.query(TypeHonoraire)
+                      .filter(TypeHonoraire.id.in_(ids_types))
+                      .order_by(TypeHonoraire.niveau_1).all())
         honor= session.get(TypeHonoraire, honoraire_id) if honoraire_id else None
         professions = (session.query(ProfessionSante)
                        .order_by(ProfessionSante.libelle).all())
