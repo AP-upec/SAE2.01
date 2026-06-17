@@ -1,9 +1,29 @@
 {% extends "base.html" %}
-{% block titre %}Carte des dentistes{% endblock %}
+{% block titre %}Carte des densités{% endblock %}
 
 {% block contenu %}
-<h2>Carte interactive des dentistes par département ({{ annee }})</h2>
-<p>Densité de chirurgiens-dentistes pour 100 000 habitants. Cliquez sur un département pour le détail.</p>
+<h2>Carte interactive des densités par département</h2>
+<p>Densité de professionnels de santé pour 100 000 habitants. Choisissez une profession et une année, puis cliquez sur un département pour le détail.</p>
+
+<form class="formulaire" onsubmit="return false;">
+    <label>Profession
+        <select id="profession">
+            {% for p in professions %}
+                <option value="{{ p.id }}" {% if p.libelle == 'Ensemble des médecins' %}selected{% endif %}>{{ p.libelle }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>Année
+        <select id="annee">
+            {% for a in annees %}
+                <option value="{{ a }}" {% if a == 2023 %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+        </select>
+    </label>
+</form>
+
+<p id="legende-titre"></p>
 
 <div id="map" style="height: 600px; margin-top:20px;"></div>
 
@@ -29,19 +49,12 @@
 </style>
 
 <script>
-    const donnees = {{ donnees|tojson }};
-
-    const densites = {};
-    const effectifs = {};
-    donnees.forEach(d => {
-        densites[d.code] = d.densite;
-        effectifs[d.code] = d.effectif;
-    });
-
-    // Math.max(1, ...) évite une division par zéro si aucune donnée
-    const max = Math.max(1, ...Object.values(densites));
-
+    const URL_GEOJSON = "{{ url_for('static', filename='geo/departements.geojson') }}";
+    const URL_DENSITES = "{{ url_for('dentistes.densites') }}";
     const seuils = [0, 0.1, 0.2, 0.4, 0.6, 0.8];
+
+    let densites = {}, effectifs = {}, max = 1;
+    let coucheDepts = null, legende = null;
 
     function couleur(valeur) {
         const ratio = valeur / max;
@@ -53,59 +66,86 @@
                              "#FEB24C";
     }
 
-    const map = L.map('map').setView([46.6, 2.5], 6);
+    function styleDept(feature) {
+        const v = densites[feature.properties.code] || 0;
+        return { fillColor: couleur(v), weight: 1, color: "white", fillOpacity: 0.8 };
+    }
 
+    function popupDept(feature, layer) {
+        const code = feature.properties.code, nom = feature.properties.nom;
+        const eff = effectifs[code] || 0, den = densites[code] || 0;
+        layer.bindPopup(
+            `<b>${nom} (${code})</b><br>` +
+            `Effectif : ${eff}<br>` +
+            `Densité : ${den} / 100 000 hab.`
+        );
+    }
+
+    const map = L.map('map').setView([46.6, 2.5], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    fetch("{{ url_for('static', filename='geo/departements.geojson') }}")
+    // Le fond départemental est chargé une seule fois ; seules les couleurs changent ensuite.
+    fetch(URL_GEOJSON)
         .then(r => r.json())
         .then(geojson => {
-            L.geoJSON(geojson, {
-                style: feature => {
-                    const code = feature.properties.code;
-                    const val = densites[code] || 0;
-                    return {
-                        fillColor: couleur(val),
-                        weight: 1,
-                        color: "white",
-                        fillOpacity: 0.8
-                    };
-                },
-                onEachFeature: (feature, layer) => {
-                    const code = feature.properties.code;
-                    const nom = feature.properties.nom;
-                    const eff = effectifs[code] || 0;
-                    const den = densites[code] || 0;
-                    layer.bindPopup(
-                        `<b>${nom} (${code})</b><br>` +
-                        `Dentistes : ${eff}<br>` +
-                        `Densité : ${den} / 100 000 hab.`
-                    );
-                }
-            }).addTo(map);
+            coucheDepts = L.geoJSON(geojson, { style: styleDept, onEachFeature: popupDept }).addTo(map);
+            chargerDensites();
         });
 
-    // Légende
-    const legende = L.control({ position: "bottomright" });
-    legende.onAdd = function () {
-        const div = L.DomUtil.create("div", "legende");
-        div.innerHTML = "<b>Densité<br>/ 100 000 hab.</b><br>";
-        for (let i = 0; i < seuils.length; i++) {
-            const borneInf = Math.round(seuils[i] * max);
-            const c = couleur(seuils[i] * max + 0.001);
-            if (i < seuils.length - 1) {
-                const borneSup = Math.round(seuils[i + 1] * max);
-                div.innerHTML += `<i style="background:${c}"></i> ${borneInf}&ndash;${borneSup}<br>`;
-            } else {
-                div.innerHTML += `<i style="background:${c}"></i> ${borneInf}+<br>`;
+    function chargerDensites() {
+        const profSelect = document.getElementById("profession");
+        const pid = profSelect.value;
+        const annee = document.getElementById("annee").value;
+        document.getElementById("legende-titre").innerHTML =
+            `<b>${profSelect.selectedOptions[0].text}</b> &mdash; ${annee}`;
+
+        fetch(`${URL_DENSITES}?profession_id=${pid}&annee=${annee}`)
+            .then(r => r.json())
+            .then(data => {
+                densites = {};
+                effectifs = {};
+                for (const [code, info] of Object.entries(data.departements)) {
+                    densites[code] = info.densite || 0;
+                    effectifs[code] = info.effectif || 0;
+                }
+                // Math.max(1, ...) évite une division par zéro si aucune donnée
+                max = Math.max(1, ...Object.values(densites));
+                if (coucheDepts) {
+                    coucheDepts.eachLayer(layer => {
+                        layer.setStyle(styleDept(layer.feature));
+                        popupDept(layer.feature, layer);
+                    });
+                }
+                majLegende();
+            });
+    }
+
+    function majLegende() {
+        if (legende) { map.removeControl(legende); }
+        legende = L.control({ position: "bottomright" });
+        legende.onAdd = function () {
+            const div = L.DomUtil.create("div", "legende");
+            div.innerHTML = "<b>Densité<br>/ 100 000 hab.</b><br>";
+            for (let i = 0; i < seuils.length; i++) {
+                const inf = Math.round(seuils[i] * max);
+                const c = couleur(seuils[i] * max + 0.001);
+                if (i < seuils.length - 1) {
+                    const sup = Math.round(seuils[i + 1] * max);
+                    div.innerHTML += `<i style="background:${c}"></i> ${inf}&ndash;${sup}<br>`;
+                } else {
+                    div.innerHTML += `<i style="background:${c}"></i> ${inf}+<br>`;
+                }
             }
-        }
-        return div;
-    };
-    legende.addTo(map);
+            return div;
+        };
+        legende.addTo(map);
+    }
+
+    document.getElementById("profession").addEventListener("change", chargerDensites);
+    document.getElementById("annee").addEventListener("change", chargerDensites);
 </script>
 
 {% endblock %}
