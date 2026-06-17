@@ -7,6 +7,7 @@ from controllers.prescriptions import bp_prescriptions
 from controllers.comparaison import bp_comparaison
 from controllers.honoraires import bp_honoraires
 from controllers.auth import bp_auth
+from controllers.dentistes import bp as dentistes_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,6 +19,7 @@ app.register_blueprint(bp_prescriptions)
 app.register_blueprint(bp_comparaison)
 app.register_blueprint(bp_honoraires)
 app.register_blueprint(bp_auth)
+app.register_blueprint(dentistes_bp)
 
 # Gestion des erreurs
 @app.errorhandler(404)

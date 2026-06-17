@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titre %}Carte des dentistes{% endblock %}
+
+{% block contenu %}
+<h2>Carte interactive des dentistes par département</h2>
+
+<div id="map" style="height: 600px; margin-top:20px;"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    const donnees = {{ donnees|tojson }};
+
+    const effectifs = {};
+    donnees.forEach(d => effectifs[d.code] = d.effectif);
+
+    const max = Math.max(...Object.values(effectifs));
+
+    function couleur(valeur) {
+        const ratio = valeur / max;
+        return ratio > 0.8 ? "#800026" :
+               ratio > 0.6 ? "#BD0026" :
+               ratio > 0.4 ? "#E31A1C" :
+               ratio > 0.2 ? "#FC4E2A" :
+               ratio > 0.1 ? "#FD8D3C" :
+                             "#FEB24C";
+    }
+
+    const map = L.map('map').setView([46.6, 2.5], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map);
+
+    fetch("https://france-geojson.gregoiredavid.fr/repo/departements.geojson")
+        .then(r => r.json())
+        .then(geojson => {
+            L.geoJSON(geojson, {
+                style: feature => {
+                    const code = feature.properties.code;
+                    const val = effectifs[code] || 0;
+                    return {
+                        fillColor: couleur(val),
+                        weight: 1,
+                        color: "white",
+                        fillOpacity: 0.8
+                    };
+                },
+                onEachFeature: (feature, layer) => {
+                    const code = feature.properties.code;
+                    const nom = feature.properties.nom;
+                    const val = effectifs[code] || 0;
+
+                    layer.bindPopup(`<b>${nom}</b><br>Dentistes : ${val}`);
+                }
+            }).addTo(map);
+        });
+</script>
+
+{% endblock %}
