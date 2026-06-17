@@ -2,20 +2,46 @@
 {% block titre %}Carte des dentistes{% endblock %}
 
 {% block contenu %}
-<h2>Carte interactive des dentistes par département</h2>
+<h2>Carte interactive des dentistes par département ({{ annee }})</h2>
+<p>Densité de chirurgiens-dentistes pour 100 000 habitants. Cliquez sur un département pour le détail.</p>
 
 <div id="map" style="height: 600px; margin-top:20px;"></div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<style>
+    .legende {
+        background: white;
+        padding: 8px 10px;
+        border-radius: 6px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.2);
+        font-size: 13px;
+        line-height: 18px;
+    }
+    .legende i {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        vertical-align: middle;
+    }
+</style>
+
 <script>
     const donnees = {{ donnees|tojson }};
 
+    const densites = {};
     const effectifs = {};
-    donnees.forEach(d => effectifs[d.code] = d.effectif);
+    donnees.forEach(d => {
+        densites[d.code] = d.densite;
+        effectifs[d.code] = d.effectif;
+    });
 
-    const max = Math.max(...Object.values(effectifs));
+    // Math.max(1, ...) évite une division par zéro si aucune donnée
+    const max = Math.max(1, ...Object.values(densites));
+
+    const seuils = [0, 0.1, 0.2, 0.4, 0.6, 0.8];
 
     function couleur(valeur) {
         const ratio = valeur / max;
@@ -30,16 +56,17 @@
     const map = L.map('map').setView([46.6, 2.5], 6);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-        maxZoom: 18
+        maxZoom: 18,
+        attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    fetch("https://france-geojson.gregoiredavid.fr/repo/departements.geojson")
+    fetch("{{ url_for('static', filename='geo/departements.geojson') }}")
         .then(r => r.json())
         .then(geojson => {
             L.geoJSON(geojson, {
                 style: feature => {
                     const code = feature.properties.code;
-                    const val = effectifs[code] || 0;
+                    const val = densites[code] || 0;
                     return {
                         fillColor: couleur(val),
                         weight: 1,
@@ -50,12 +77,35 @@
                 onEachFeature: (feature, layer) => {
                     const code = feature.properties.code;
                     const nom = feature.properties.nom;
-                    const val = effectifs[code] || 0;
-
-                    layer.bindPopup(`<b>${nom}</b><br>Dentistes : ${val}`);
+                    const eff = effectifs[code] || 0;
+                    const den = densites[code] || 0;
+                    layer.bindPopup(
+                        `<b>${nom} (${code})</b><br>` +
+                        `Dentistes : ${eff}<br>` +
+                        `Densité : ${den} / 100 000 hab.`
+                    );
                 }
             }).addTo(map);
         });
+
+    // Légende
+    const legende = L.control({ position: "bottomright" });
+    legende.onAdd = function () {
+        const div = L.DomUtil.create("div", "legende");
+        div.innerHTML = "<b>Densité<br>/ 100 000 hab.</b><br>";
+        for (let i = 0; i < seuils.length; i++) {
+            const borneInf = Math.round(seuils[i] * max);
+            const c = couleur(seuils[i] * max + 0.001);
+            if (i < seuils.length - 1) {
+                const borneSup = Math.round(seuils[i + 1] * max);
+                div.innerHTML += `<i style="background:${c}"></i> ${borneInf}&ndash;${borneSup}<br>`;
+            } else {
+                div.innerHTML += `<i style="background:${c}"></i> ${borneInf}+<br>`;
+            }
+        }
+        return div;
+    };
+    legende.addTo(map);
 </script>
 
 {% endblock %}

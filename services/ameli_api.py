@@ -28,6 +28,33 @@ class AmeliAPI:
         {"select": "annee,effectif,densite", "where": where, "limit": 100},
         )
 
+    def get_effectifs_par_departement(self, profession, annee):
+        """Effectifs et densités de TOUS les départements pour une profession et une année.
+        Retourne un dict {code_departement: {"effectif": ..., "densite": ...}}."""
+        where = (
+        f"profession_sante=\"{profession}\" AND "
+        f"year(annee)={annee} AND "
+        f"libelle_classe_age=\"Tout âge\" AND "
+        f"libelle_sexe=\"tout sexe\""
+        )
+        resultats = {}
+        offset = 0
+        while True:  # l'API limite à 100 lignes par appel -> pagination
+            lignes = self._requete(
+            "demographie-effectifs-et-les-densites",
+            {"select": "departement,effectif,densite", "where": where,
+            "limit": 100, "offset": offset},
+            )
+            for ligne in lignes:
+                resultats[ligne["departement"]] = {
+                    "effectif": ligne.get("effectif"),
+                    "densite": ligne.get("densite"),
+                }
+            if len(lignes) < 100:
+                break
+            offset += 100
+        return resultats
+
     def get_evolution_effectifs(self, profession, departement_code):
         """Effectifs sur toutes les années disponibles (pour un graphique)."""
         where = (f"profession_sante=\"{profession}\" AND "
