@@ -1,6 +1,10 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+# Charge le .env situé à cote de ce fichier, quel que soit le dossier de lancement.
+# Sous WSGI (Alwaysdata) le dossier courant n'est pas celui de l'app : sans chemin
+# explicite les variables DB ne sont pas lues -> erreur 500 en production.
+load_dotenv(Path(__file__).resolve().parent / ".env")
 class Config:
     """Configuration de l'application."""
     DB_USER = os.getenv("DB_USER")
