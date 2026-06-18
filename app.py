@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template
 from config import Config
 
@@ -11,6 +12,29 @@ from controllers.dentistes import bp as dentistes_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+
+class _PrefixMiddleware:
+    """Sert l'application sous un sous-chemin (ex: /sae201_b1) en production.
+    Alwaysdata transmet le sous-chemin dans l'URL sans le retirer : on le déplace
+    de PATH_INFO vers SCRIPT_NAME pour que le routage et url_for restent corrects.
+    Inactif en local (APP_BASE_URL non défini)."""
+
+    def __init__(self, wsgi_app, prefix):
+        self.wsgi_app = wsgi_app
+        self.prefix = prefix
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        if path == self.prefix or path.startswith(self.prefix + "/"):
+            environ["SCRIPT_NAME"] = environ.get("SCRIPT_NAME", "") + self.prefix
+            environ["PATH_INFO"] = path[len(self.prefix):] or "/"
+        return self.wsgi_app(environ, start_response)
+
+
+_prefix = os.getenv("APP_BASE_URL", "").rstrip("/")
+if _prefix:
+    app.wsgi_app = _PrefixMiddleware(app.wsgi_app, _prefix)
 
 # Enregistrement des blueprints
 app.register_blueprint(bp_accueil)

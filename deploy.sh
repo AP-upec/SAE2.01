@@ -1,53 +1,34 @@
 #!/usr/bin/env bash
-# Deploiement automatique du site sur Alwaysdata.
-# Lance par une tache planifiee (cron) du compte sae204 : met a jour le code
-# depuis GitHub (branche main) et redemarre le site seulement s'il y a du nouveau.
-#
-# Aucun secret ici (le depot est public) : la cle API et l'id du site sont lus
-# depuis l'environnement, charge depuis ~/.adata.env par la tache cron :
-#   ADATA_API_KEY=...      cle API Alwaysdata (Profil > Tokens)
-#   ADATA_SITE_ID=...      id numerique du site WSGI
-#   ADATA_ACCOUNT=sae204   (optionnel, defaut sae204)
-set -euo pipefail
+# Deploiement du site sur Alwaysdata.
+# Cette logique est aussi recopiee dans la tache planifiee du compte sae204
+# (Avance > Taches planifiees), qui l'execute toutes les 5 minutes.
+# Met a jour le code depuis GitHub (main) et recharge l'app uWSGI si besoin.
+# Le rechargement passe par touch-reload (parametre uWSGI du site, sur wsgi.py),
+# donc aucun token ni secret n'est necessaire ici.
+set -u
+cd "$(cd "$(dirname "$0")" && pwd)" || exit 1
+REPO="https://github.com/AP-upec/SAE2.01.git"
 
-# Se placer dans le dossier du depot (la ou se trouve ce script)
-cd "$(dirname "$0")"
-
-BRANCHE="${ADATA_BRANCH:-main}"
-COMPTE="${ADATA_ACCOUNT:-sae204}"
-
-# 1) Voir s'il y a du nouveau sur origin/main
-git fetch --quiet origin "$BRANCHE"
-AVANT="$(git rev-parse HEAD)"
-APRES="$(git rev-parse "origin/$BRANCHE")"
-
-if [ "$AVANT" = "$APRES" ]; then
-    echo "$(date '+%F %T') deploy: deja a jour ($AVANT)"
-    exit 0
+# Initialiser le depot si le dossier n'en est pas un (1er deploiement)
+if [ ! -d .git ]; then
+    git init -q
+    git remote add origin "$REPO" 2>/dev/null || git remote set-url origin "$REPO"
 fi
 
-echo "$(date '+%F %T') deploy: mise a jour $AVANT -> $APRES"
+git fetch -q origin main || exit 1
+OLD="$(git rev-parse HEAD 2>/dev/null || true)"
+git reset -q --hard origin/main
+NEW="$(git rev-parse HEAD)"
 
-# 2) Aligner le code sur origin/main (.env et venv sont gitignores -> preserves)
-git reset --hard "origin/$BRANCHE"
+# Rien de nouveau -> on s'arrete (pas de rechargement inutile)
+[ "$OLD" = "$NEW" ] && { echo "deploy: deja a jour ($NEW)"; exit 0; }
+echo "deploy: $OLD -> $NEW"
 
-# 3) Reinstaller les dependances seulement si requirements.txt a change
-if git diff --name-only "$AVANT" "$APRES" | grep -q '^requirements.txt$'; then
-    PIP="pip"
-    [ -x "./venv/bin/pip" ] && PIP="./venv/bin/pip"
-    echo "$(date '+%F %T') deploy: requirements.txt modifie -> $PIP install"
-    "$PIP" install -r requirements.txt
+# Dependances seulement si requirements.txt a change (venv du site)
+if git diff --name-only "$OLD" "$NEW" 2>/dev/null | grep -q '^requirements.txt$'; then
+    [ -x venv/bin/pip ] && venv/bin/pip install -q -r requirements.txt
 fi
 
-# 4) Redemarrer le site WSGI via l'API Alwaysdata
-if [ -n "${ADATA_API_KEY:-}" ] && [ -n "${ADATA_SITE_ID:-}" ]; then
-    code="$(curl -s -o /dev/null -w '%{http_code}' -X POST \
-        --basic --user "$ADATA_API_KEY account=$COMPTE:" \
-        "https://api.alwaysdata.com/v1/site/$ADATA_SITE_ID/restart/")"
-    echo "$(date '+%F %T') deploy: restart API -> HTTP $code"
-    [ "$code" = "204" ] || { echo "deploy: echec du redemarrage (HTTP $code)" >&2; exit 1; }
-else
-    echo "deploy: ADATA_API_KEY/ADATA_SITE_ID absents -> redemarrer le site manuellement" >&2
-fi
-
-echo "$(date '+%F %T') deploy: termine"
+# Recharger l'app : touch du fichier surveille par uWSGI (touch-reload)
+touch wsgi.py
+echo "deploy: termine, app rechargee"
