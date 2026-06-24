@@ -15,7 +15,7 @@ async function chargerDepartements(selectRegion) {
 
     if (!regionId) return;
 
-    const response = await fetch(`/api/departements/${regionId}`);
+    const response = await fetch(`${window.APP_BASE || ""}/api/departements/${regionId}`);
     const departements = await response.json();
 
     for (const dept of departements) {

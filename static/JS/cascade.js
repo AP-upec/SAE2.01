@@ -17,8 +17,8 @@ document.getElementById("region").addEventListener("change", async (e) => {
 
     if (!regionId) return;
 
-    // Appel AJAX
-    const response = await fetch(`/api/departements/${regionId}`);
+    // Appel AJAX (window.APP_BASE = préfixe de l'app en prod, vide en local)
+    const response = await fetch(`${window.APP_BASE || ""}/api/departements/${regionId}`);
     const depts = await response.json();
 
     // Remplir la liste
