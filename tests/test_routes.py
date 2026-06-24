@@ -116,3 +116,29 @@ def test_prefix_middleware():
     mw({"PATH_INFO": "/autre", "SCRIPT_NAME": ""}, lambda *a: None)
     assert vu["PATH_INFO"] == "/autre"
     assert vu["SCRIPT_NAME"] == ""
+
+
+def test_export_csv(client, monkeypatch):
+    import controllers.export as exp
+    monkeypatch.setattr(
+        exp.api, "get_evolution_effectifs",
+        lambda profession, code: [
+            {"annee": "2022", "effectif": 10, "densite": 1.5},
+            {"annee": "2023", "effectif": 12, "densite": 1.8},
+        ],
+    )
+    s = db.Session()
+    try:
+        from models.dimensions import Departement
+        dept_id = s.query(Departement).filter_by(code="75").first().id
+    finally:
+        s.close()
+    pid = _id_profession("Ensemble des médecins")
+
+    r = client.get(f"/export/effectifs.csv?profession_id={pid}&departement_id={dept_id}")
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["Content-Type"]
+    assert "attachment" in r.headers.get("Content-Disposition", "")
+    corps = r.get_data(as_text=True)
+    assert "Annee,Effectif,Densite" in corps
+    assert "2023,12,1.8" in corps

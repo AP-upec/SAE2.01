@@ -9,6 +9,7 @@ from controllers.comparaison import bp_comparaison
 from controllers.honoraires import bp_honoraires
 from controllers.auth import bp_auth
 from controllers.dentistes import bp as dentistes_bp
+from controllers.export import bp_export
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -44,6 +45,7 @@ app.register_blueprint(bp_comparaison)
 app.register_blueprint(bp_honoraires)
 app.register_blueprint(bp_auth)
 app.register_blueprint(dentistes_bp)
+app.register_blueprint(bp_export)
 
 # Gestion des erreurs
 @app.errorhandler(404)

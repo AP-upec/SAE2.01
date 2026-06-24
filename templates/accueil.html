@@ -71,6 +71,10 @@
             <p>Aucune donnée disponible pour cette sélection.</p>
         {% endif %}
 
+        <p>
+            <a href="{{ url_for('export.effectifs_csv', profession_id=prof.id, departement_id=dept.id) }}">⬇ Exporter l'évolution (CSV)</a>
+        </p>
+
         {% if evolution %}
             <h3>Évolution sur plusieurs années</h3>
             <canvas id="graphique"></canvas>
