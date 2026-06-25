@@ -24,6 +24,7 @@
 </form>
 
 <p id="legende-titre"></p>
+<p><a id="lien-export-csv" href="#">⬇ Exporter (CSV)</a></p>
 
 <div id="map" style="height: 600px; margin-top:20px;"></div>
 
@@ -51,6 +52,7 @@
 <script>
     const URL_GEOJSON = "{{ url_for('static', filename='geo/departements.geojson') }}";
     const URL_DENSITES = "{{ url_for('dentistes.densites') }}";
+    const URL_DENSITES_CSV = "{{ url_for('export.densites_csv') }}";
     const seuils = [0, 0.1, 0.2, 0.4, 0.6, 0.8];
 
     let densites = {}, effectifs = {}, max = 1;
@@ -101,6 +103,8 @@
         const annee = document.getElementById("annee").value;
         document.getElementById("legende-titre").innerHTML =
             `<b>${profSelect.selectedOptions[0].text}</b> &mdash; ${annee}`;
+        document.getElementById("lien-export-csv").href =
+            `${URL_DENSITES_CSV}?profession_id=${pid}&annee=${annee}`;
 
         fetch(`${URL_DENSITES}?profession_id=${pid}&annee=${annee}`)
             .then(r => r.json())

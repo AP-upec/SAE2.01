@@ -74,6 +74,10 @@
             <p>Aucune donnée disponible pour cette sélection.</p>
         {% endif %}
 
+        <p>
+            <a href="{{ url_for('export.honoraires_csv', profession_id=prof.id, departement_id=dept.id, annee=annee, honoraire_id=(honor.id if honor else None)) }}">⬇ Exporter (CSV)</a>
+        </p>
+
         {% if evolution %}
             <h3>Évolution sur plusieurs années</h3>
             <canvas id="graphique"></canvas>

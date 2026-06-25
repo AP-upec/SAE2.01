@@ -100,6 +100,10 @@
             {% endfor %}
         </div>
 
+        <p>
+            <a href="{{ url_for('export.comparaison_csv', profession_id=profession.id, departement_1_id=departement_1.id, departement_2_id=departement_2.id) }}">⬇ Exporter (CSV)</a>
+        </p>
+
         {% if evolution_1 or evolution_2 %}
             <h3>Évolution des effectifs</h3>
             <canvas id="graphique-comparaison"></canvas>

@@ -5,7 +5,7 @@ ameli.fr ; la seule route qui appelle l'API (carte des densités) est testée av
 un faux service.
 """
 import models.db as db
-from models.dimensions import Region, ProfessionSante
+from models.dimensions import Region, ProfessionSante, Departement
 
 
 def _id_region(code):
@@ -20,6 +20,14 @@ def _id_profession(libelle):
     s = db.Session()
     try:
         return s.query(ProfessionSante).filter_by(libelle=libelle).first().id
+    finally:
+        s.close()
+
+
+def _id_departement(code):
+    s = db.Session()
+    try:
+        return s.query(Departement).filter_by(code=code).first().id
     finally:
         s.close()
 
@@ -142,3 +150,55 @@ def test_export_csv(client, monkeypatch):
     corps = r.get_data(as_text=True)
     assert "Annee,Effectif,Densite" in corps
     assert "2023,12,1.8" in corps
+
+
+def test_export_honoraires_csv(client, monkeypatch):
+    import controllers.export as exp
+    monkeypatch.setattr(exp.api, "get_honoraires", lambda *a, **k: [
+        {"type_honoraires_niveau_1": "Actes", "type_honoraires_niveau_2": None,
+         "type_honoraires_niveau_3": None, "montant_honoraires": 100,
+         "montant_honoraires_moyens": 5}])
+    pid = _id_profession("Cardiologues")
+    did = _id_departement("75")
+    r = client.get(f"/export/honoraires.csv?profession_id={pid}&departement_id={did}&annee=2023")
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["Content-Type"]
+    corps = r.get_data(as_text=True)
+    assert "Type niveau 1" in corps and "Actes" in corps
+
+
+def test_export_prescriptions_csv(client, monkeypatch):
+    import controllers.export as exp
+    monkeypatch.setattr(exp.api, "get_prescriptions", lambda *a, **k: [
+        {"libelle_poste_prescription": "Médicaments",
+         "montant_total_prescription": 10, "montant_moyen_prescription": 2}])
+    pid = _id_profession("Cardiologues")
+    did = _id_departement("75")
+    r = client.get(f"/export/prescriptions.csv?profession_id={pid}&departement_id={did}&annee=2023")
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["Content-Type"]
+    assert "Médicaments" in r.get_data(as_text=True)
+
+
+def test_export_comparaison_csv(client, monkeypatch):
+    import controllers.export as exp
+    monkeypatch.setattr(exp.api, "get_evolution_effectifs",
+                        lambda profession, code: [{"annee": "2023", "effectif": 5, "densite": 1.0}])
+    pid = _id_profession("Cardiologues")
+    r = client.get(f"/export/comparaison.csv?profession_id={pid}"
+                   f"&departement_1_id={_id_departement('75')}"
+                   f"&departement_2_id={_id_departement('77')}")
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["Content-Type"]
+    assert "Departement,Annee,Effectif,Densite" in r.get_data(as_text=True)
+
+
+def test_export_densites_csv(client, monkeypatch):
+    import controllers.export as exp
+    monkeypatch.setattr(exp.api, "get_effectifs_par_departement",
+                        lambda profession, annee: {"75": {"effectif": 100, "densite": 50.0}})
+    pid = _id_profession("Ensemble des médecins")
+    r = client.get(f"/export/densites.csv?profession_id={pid}&annee=2023")
+    assert r.status_code == 200
+    assert "text/csv" in r.headers["Content-Type"]
+    assert "75,100,50.0" in r.get_data(as_text=True)
